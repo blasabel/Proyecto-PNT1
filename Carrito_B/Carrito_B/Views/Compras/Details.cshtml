@@ -1,0 +1,118 @@
+﻿@using Carrito_B.Helpers
+@model Carrito_B.Models.Compra
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Compra</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Carrito)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Carrito.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Sucursal)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Sucursal.Direccion)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Fecha)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Fecha)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Total)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Total)
+        </dd>
+
+        @if (User.IsInRole(Configs.ADMIN_ROLE) || User.IsInRole(Configs.EMPLEADO_ROLE))
+        {
+            <dt class="col-sm-2">
+                Cliente
+            </dt>
+            <dd class="col-sm-10">
+                @if (Model.Cliente != null)
+                {
+                    <span>
+                        @Model.Cliente.Nombre @Model.Cliente.Apellido (@Model.Cliente.Email) |
+                        <a asp-controller="Clientes"
+                           asp-action="Details"
+                           asp-route-id="@Model.Cliente.Id">
+                            Ver ficha del cliente
+                        </a>
+                    </span>
+                }
+                else
+                {
+                    <span>No asociado</span>
+                }
+            </dd>
+        }
+    </dl>
+</div>
+
+<h5>Detalle de ítems</h5>
+
+@if (Model.Carrito?.CarritoItems == null || !Model.Carrito.CarritoItems.Any())
+{
+    <div class="alert alert-info">No se encontraron ítems para esta compra.</div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th class="text-end">Cantidad</th>
+                <th class="text-end">Precio unitario</th>
+                <th class="text-end">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Carrito.CarritoItems)
+            {
+                <tr>
+                    <td>@item.Producto?.Nombre</td>
+                    <td class="text-end">@item.Cantidad</td>
+                    <td class="text-end">@item.ValorUnitario.ToString("C")</td>
+                    <td class="text-end">@((item.Cantidad * item.ValorUnitario).ToString("C"))</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="text-end">Total</th>
+                <th class="text-end">@Model.Total.ToString("C")</th>
+            </tr>
+        </tfoot>
+    </table>
+}
+
+
+@if (User.IsInRole(Configs.ADMIN_ROLE) || User.IsInRole(Configs.EMPLEADO_ROLE))
+{
+    <div>
+        <td>
+            @Html.ActionLink("Volver al index", "Index", "Compras")
+        </td>
+    </div>
+} else
+{
+    <div>
+        <td>
+            @Html.ActionLink("Volver al historial", "Historial", "Clientes", new { id = Model.Carrito.ClienteId })
+        </td>
+    </div>
+}
+

@@ -1,0 +1,8 @@
+﻿.home-class {
+    background: url('/img/Carrito.png')
+    no-repeat center center;
+    background-size: 40px 40px;
+    height: 40px;
+    width: 40px;
+    margin: 8px;
+}

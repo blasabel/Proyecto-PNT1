@@ -1,0 +1,89 @@
+﻿@model Carrito_B.Models.Carrito
+
+@{
+    ViewData["Title"] = "Mi carrito";
+}
+
+<h2>Mi carrito</h2>
+
+@if (Model.CarritoItems == null || !Model.CarritoItems.Any())
+{
+    <div class="alert alert-info mt-3">
+        Tu carrito está vacío.
+    </div>
+}
+else
+{
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th class="text-end">Cantidad</th>
+                <th class="text-end">Precio unitario</th>
+                <th class="text-end">Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CarritoItems)
+            {
+                <tr>
+                    <td>@item.Producto?.Descripcion</td>
+                    <td class="text-end">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <form asp-controller="CarritoItems" asp-action="RestarCant" asp-route-id="@item.Id" method="post" class="mx-1">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">−</button>
+                            </form>
+                            <span class="mx-2">@item.Cantidad</span>
+                            <form asp-controller="CarritoItems" asp-action="SumarCant" asp-route-id="@item.Id" method="post" class="mx-1">
+                                <button type="submit" class="btn btn-sm btn-outline-success">+</button>
+                            </form>
+                        </div>
+                    </td>
+                    <td class="text-end">@item.ValorUnitario.ToString("C")</td>
+                    <td class="text-end">@item.Subtotal.ToString("C")</td>
+                    <td class="text-end">
+                        <form asp-controller="CarritoItems" asp-action="EliminarDelCarrito" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="text-end">Total</th>
+                <th class="text-end">@Model.Subtotal.ToString("C")</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="d-flex justify-content-between mt-3">
+        @if (Model.Id != 0)
+        {
+            <form asp-controller="Carritos" asp-action="Vaciar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-danger">
+                    Vaciar carrito
+                </button>
+            </form>
+        }
+
+        <div class="d-flex gap-2">
+            <a asp-controller="Productos" asp-action="Index" class="btn btn-secondary">
+                Seguir comprando
+            </a>
+            <a asp-controller="Compras"
+               asp-action="Create"
+               asp-route-carritoId="@Model.Id"
+               class="btn btn-primary">
+                Comprar
+            </a>
+        </div>
+    </div>
+}

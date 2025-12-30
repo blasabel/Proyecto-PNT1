@@ -1,0 +1,138 @@
+﻿@model IEnumerable<Carrito_B.Models.Producto>
+@using Carrito_B.Helpers
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<h1 class="mb-4">Productos</h1>
+
+@if (User.IsInRole(Configs.ADMIN_ROLE) || User.IsInRole(Configs.EMPLEADO_ROLE))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success mb-3">Crear nuevo producto</a>
+    </p>
+}
+
+
+<form asp-controller="Productos" asp-action="Index" method="get" class="mb-4">
+    <div class="form-group d-flex align-items-center gap-2">
+        <label for="categoriaId" class="fw-bold">Categoría:</label>
+        <select id="categoriaId"
+                name="categoriaId"
+                asp-items="ViewBag.Categorias"
+                class="form-select w-auto"
+                onchange="this.form.submit()">
+            <option value="">-- Todas --</option>
+        </select>
+    </div>
+</form>
+
+<div class="container mt-4">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+
+            var stockTotal = item.StockItems?.Sum(s => s.Cantidad) ?? 0;
+
+            var img = item.Imagen;
+            if (string.IsNullOrWhiteSpace(img))
+                img = "~/images/default.png";
+
+            bool isDataUrl = img.StartsWith("data:image", StringComparison.OrdinalIgnoreCase);
+
+            <div class="col-md-2 mb-2">
+                <div class="card h-100 shadow-sm">
+                    @if (isDataUrl)
+                    {
+                        <img src="@img" class="card-img-top" alt="Imagen @item.Nombre" />
+                    }
+                    else
+                    {
+                        <img src="@Url.Content(img)" class="card-img-top" alt="Imagen @item.Nombre" />
+                    }
+
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Nombre</h5>
+                        <p class="card-text text-muted">@item.Descripcion</p>
+
+                        <p><strong>Precio:</strong> $@item.PrecioVigente</p>
+                        <p><strong>Categoría:</strong> @(item.Categoria?.Nombre ?? "Sin categoría")</p>
+                        <p><strong>Marca:</strong> @(item.Marca?.Nombre ?? "Sin marca")</p>
+
+                       
+                        @if (!item.Activo)
+                        {
+                            
+                            <div class="d-grid gap-2">
+                                <h7 style="color: red"> -- Producto fuera de catálogo -- </h7>
+
+                                @if (User.IsInRole(Configs.ADMIN_ROLE) || User.IsInRole(Configs.EMPLEADO_ROLE))
+                                {
+                                    <form asp-action="ActProduct" asp-route-id="@item.Id">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-primary"> Activar Producto </button>
+                                    </form>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            
+                            @if (stockTotal <= 0)
+                            {
+                                
+                                <div class="d-grid gap-2">
+                                    <span style="color: red; font-weight: bold;"> -- Sin stock disponible -- </span>
+
+                                    @if (User.IsInRole(Configs.ADMIN_ROLE) || User.IsInRole(Configs.EMPLEADO_ROLE))
+                                    {
+                                        <form asp-action="DeactProduct" asp-route-id="@item.Id">
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-warning"> Desactivar Producto </button>
+                                        </form>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                               
+                                <div class="d-grid gap-2{">
+                                    @if (!User.IsInRole(Configs.ADMIN_ROLE) && !User.IsInRole(Configs.EMPLEADO_ROLE)){
+                                    <form asp-controller="Carritos" asp-action="AddCarrito" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productoId" value="@item.Id" />
+                                        <input type="number" name="cantidad" value="1" min="1" class="form-control mb-2" />
+                                        <button type="submit" class="btn btn-primary w-100">Agregar al carrito</button>
+                                    </form>
+                                    }
+                                    @if (User.IsInRole(Configs.ADMIN_ROLE) || User.IsInRole(Configs.EMPLEADO_ROLE))
+                                    {
+                                        <form asp-action="DeactProduct" asp-route-id="@item.Id">
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <button type="submit" class="btn btn-warning"> Desactivar Producto </button>
+                                        </form>
+                                    }
+                                </div>
+                            }
+                        }
+
+
+                    </div>
+                    <div class="card-footer text-center">
+                        @if (User.IsInRole(Configs.ADMIN_ROLE) || User.IsInRole(Configs.EMPLEADO_ROLE))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                            @: |
+                        }
+                        <a asp-action="Details" asp-route-id="@item.Id">Detalles</a>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+        
+ 

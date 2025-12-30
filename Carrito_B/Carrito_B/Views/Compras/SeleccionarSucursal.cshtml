@@ -1,0 +1,28 @@
+﻿@model Carrito_B.Models.Compra
+
+<h3>Stock insuficiente en la sucursal seleccionada</h3>
+<p>Productos faltantes: @string.Join(", ", ViewBag.Faltantes)</p>
+
+<form asp-action="ConfirmarSucursal" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="CarritoId" value="@Model.CarritoId" />
+
+    <div class="form-group">
+        <label for="SucursalId">Sucursal alternativa</label>
+        <select id="SucursalId" name="SucursalId" class="form-control">
+            @foreach (var sucursal in ViewBag.SucursalesAlternativas)
+            {
+                <option value="@sucursal.Id">@sucursal.Nombre - @sucursal.Direccion</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit">Confirmar</button>
+
+    <button type="submit"
+            formmethod="get"
+            formaction="@Url.Action("CancelarCompra", "Compras", new { carritoId = Model.CarritoId })"
+            onclick="return confirm('¿Estás seguro? Esto vaciará tu carrito actual y tendrás que agregar los productos nuevamente.');">
+        Cancelar compra
+    </button>
+</form>

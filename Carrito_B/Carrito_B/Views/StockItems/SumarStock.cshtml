@@ -1,0 +1,43 @@
+﻿@model Carrito_B.Models.StockItem
+
+@{
+    ViewData["Title"] = "Agregar stock";
+    int? sucursalFiltroId = ViewBag.SucursalFiltroId as int?;
+}
+
+<h1>Agregar stock</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Producto?.Nombre</h5>
+        <p class="card-text"><strong>Sucursal:</strong> @Model.Sucursal?.Nombre (@Model.Sucursal?.Direccion)</p>
+        <p class="card-text"><strong>Stock actual:</strong> @Model.Cantidad</p>
+    </div>
+</div>
+
+<form asp-controller="StockItems" asp-action="SumarStock" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+    <input type="hidden" name="sucursalFiltroId" value="@sucursalFiltroId" />
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="mb-3">
+        <label for="cantidad" class="form-label">Cantidad a sumar</label>
+        <input type="number" id="cantidad" name="cantidad" min="1" class="form-control" value="1" required />
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Agregar</button>
+        <a asp-action="Index"
+           asp-route-sucursalId="@Model.SucursalId"
+           class="btn btn-secondary">
+            Cancelar
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

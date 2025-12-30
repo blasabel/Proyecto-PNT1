@@ -1,0 +1,45 @@
+﻿@model List<Carrito_B.Models.Compra>
+
+@{
+    ViewData["Title"] = "Historial";
+}
+
+<h1>Historial</h1>
+
+@if (Model == null || !Model.Any())
+{
+    <p>No hay compras registradas.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Sucursal</th>
+                <th>Carrito</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var compra in Model)
+            {
+                <tr>
+                    <td>@compra.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@compra.Total.ToString("C")</td>
+                    <td>@compra.Sucursal?.Nombre</td>
+
+
+                    <td>
+                        @Html.ActionLink("Ver Detalles", "Details", "Compras", new { id = compra.Id })
+                    </td>
+
+
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        <a asp-controller="Productos" asp-action="Index">Volver a Productos</a>
+    </div>
+}

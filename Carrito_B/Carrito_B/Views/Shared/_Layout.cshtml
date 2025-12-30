@@ -1,0 +1,136 @@
+﻿@using Carrito_B.Helpers
+@inject Microsoft.AspNetCore.Identity.SignInManager<Carrito_B.Models.Persona> signInManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Carrito_B</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Carrito_B.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Home.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="home-class nav-link p-0" asp-area="" asp-controller="Home" asp-action="Index"></a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Productos" asp-action="Index">Productos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Sucursales" asp-action="Index">Sucursales</a>
+                        </li>
+
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            @if (User.IsInRole(Configs.ADMIN_ROLE) || User.IsInRole(Configs.EMPLEADO_ROLE))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Categorias" asp-action="Index">Categorías</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Marcas" asp-action="Index">Marcas</a>
+                                </li>
+                                
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Empleados" asp-action="Index">Empleados</a>
+                                </li>
+                                
+                            }
+                            @if (User.IsInRole(Configs.ADMIN_ROLE))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Clientes" asp-action="Index">Clientes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Personas" asp-action="Index">Personas</a>
+                                </li>
+                            }
+                            @if (User.IsInRole(Configs.ADMIN_ROLE) || User.IsInRole(Configs.EMPLEADO_ROLE))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Compras" asp-action="Index">Compras</a>
+                                </li>
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="StockItems" asp-action="Index">Inventario</a>
+                                    </li>
+                                }
+                            }
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav ms-auto">
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                                   id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span>@User.Identity.Name</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Perfil" asp-action="Index">Perfil</a>
+                                    </li>
+
+                                    @if (User.IsInRole(Configs.CLIENTE_ROLE))
+
+                                    @if (!User.IsInRole(Configs.ADMIN_ROLE) && !User.IsInRole(Configs.EMPLEADO_ROLE))
+
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Carritos" asp-action="MiCarrito">Carrito</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Clientes" asp-action="Historial">
+                                                Historial de compras
+                                            </a>
+                                        </li>
+                                    }
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="CerrarSesion">Cerrar sesión</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Registrar">Registrate</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="IniciarSesion">Iniciar Sesion</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,60 @@
+﻿@model Carrito_B.Models.Carrito
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Carrito</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Activo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Activo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Cliente)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Cliente.Apellido)
+        </dd>
+    </dl>
+    @if (Model.CarritoItems != null && Model.CarritoItems.Any())
+    {
+        <div>
+            <h4 style="color: darkblue">Productos agregados al carrtio</h4>
+            @foreach (var item in Model.CarritoItems)
+            {
+                <div class="card-body">
+                    <h5 class="card-title">@item.Producto.Nombre</h5>
+                    <p class="card-text text-muted">@item.Producto.Descripcion</p>
+                    <p class="card-text text-muted">Cantidad: @item.Cantidad</p>
+                    <p><strong>Subtotal:</strong> $@item.Subtotal</p>
+                    @if (item.Carrito.Activo)
+                    {
+                        <div class="d-flex align-items-center justify-content-center">
+                            <form asp-controller="CarritoItems" asp-action="RestarCant" asp-route-id="@item.Id" method="post" class="mx-1">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">−</button>
+                            </form>
+                            <span class="mx-2">@item.Cantidad</span>
+                            <form asp-controller="CarritoItems" asp-action="SumarCant" asp-route-id="@item.Id" method="post" class="mx-1">
+                                <button type="submit" class="btn btn-sm btn-outline-success">+</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <h4> El carrito se encuentra vacio</h4>
+    }
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

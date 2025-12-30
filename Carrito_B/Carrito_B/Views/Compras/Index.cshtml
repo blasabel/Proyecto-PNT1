@@ -1,0 +1,115 @@
+﻿@model IEnumerable<Carrito_B.Models.Compra>
+
+@{
+    string titulo = "Compras";
+
+    if (ViewBag.ClienteNombre != null)
+    {
+        titulo = $"Compras de {ViewBag.ClienteNombre}";
+    }
+
+    ViewData["Title"] = titulo;
+}
+
+<h1>@titulo</h1>
+
+<form method="get" style="margin-bottom: 20px; display:flex; gap:15px; align-items:center;">
+
+    @if (ViewBag.ClienteId != null)
+    {
+        <input type="hidden" name="clienteId" value="@ViewBag.ClienteId" />
+    }
+
+    <div>
+        <label>Año:</label>
+        <select name="anio">
+            <option value="">Todos</option>
+            @for (int y = DateTime.Now.Year; y >= 2020; y--)
+            {
+                bool seleccionado = (ViewBag.Anio == y);
+                if (seleccionado)
+                {
+                    <option value="@y" selected="selected">@y</option>
+                }
+                else
+                {
+                    <option value="@y">@y</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Mes:</label>
+        <select name="mes">
+            <option value="">Todos</option>
+            @for (int m = 1; m <= 12; m++)
+            {
+                bool seleccionado = (ViewBag.Mes == m);
+
+                if (seleccionado)
+                {
+                    <option value="@m" selected="selected">
+                        @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                    </option>
+                }
+                else
+                {
+                    <option value="@m">
+                        @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                    </option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit">Filtrar</button>
+
+    <a href="/Compras/Index"
+       style="text-decoration:none; padding:6px 12px; border:1px solid #ccc; border-radius:4px; margin-left:10px;">
+        Limpiar
+    </a>
+
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Email</th>
+            <th>@Html.DisplayNameFor(model => model.Carrito)</th>
+            <th>@Html.DisplayNameFor(model => model.Sucursal)</th>
+            <th>@Html.DisplayNameFor(model => model.Fecha)</th>
+            <th>@Html.DisplayNameFor(model => model.Total)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @(item.Cliente != null ? item.Cliente.Nombre + " " + item.Cliente.Apellido : "")
+                </td>
+                <td>
+                    @item.Cliente?.Email
+                </td>
+                <td>
+                    @item.Carrito?.Id
+                </td>
+                <td>
+                    @item.Sucursal?.Direccion
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fecha)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Total)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,42 @@
+﻿@using Carrito_B.Helpers
+@model Carrito_B.ViewModels.Perfil
+
+@{
+    ViewData["Title"] = "Mi perfil";
+}
+
+<h2>Mi perfil</h2>
+
+@if (TempData["MensajePerfil"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["MensajePerfil"]
+    </div>
+}
+
+<div class="mb-3">
+    <div><strong>Email:</strong> @Model.Email</div>
+    <div><strong>Nombre:</strong> @Model.Nombre</div>
+    <div><strong>Apellido:</strong> @Model.Apellido</div>
+    <div><strong>DNI:</strong> @Model.Dni</div>
+</div>
+
+<form asp-action="Index" method="post">
+    <div class="form-group mb-2">
+        <label asp-for="Direccion" class="form-label"></label>
+        <input asp-for="Direccion" class="form-control" />
+        <span asp-validation-for="Direccion" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="Telefono" class="form-label"></label>
+        <input asp-for="Telefono" class="form-control" />
+        <span asp-validation-for="Telefono" class="text-danger"></span>
+    </div>
+        
+    <button type="submit" class="btn btn-primary mt-2">Guardar</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
